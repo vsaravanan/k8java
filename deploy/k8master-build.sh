@@ -4,7 +4,7 @@ set -exuo pipefail
 
 # Variables
 PROJECT_DIR=/data/java/Hello
-BUILD_DIR=/data/java/k8java
+BUILD_DIR=/data/java/k8java/deploy
 REGISTRY="k8master:5000"
 IMAGE_REPO="hello-api"
 
