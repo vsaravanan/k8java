@@ -77,8 +77,9 @@ log "Copying files to ${NODE}..."
 # copy_dir "${BUILD_DIR}" "${NODE}${BUILD_DIR}/" k8java
 
 copy_dir "${ORIGIN_DIR}" Hello
+copy_dir "${ORIGIN_DIR}" k8java/deploy
+
 exit 0
-# copy_dir "${ORIGIN_DIR}" k8java
 
 
 for arg in "$@"; do
