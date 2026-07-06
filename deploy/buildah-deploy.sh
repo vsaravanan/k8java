@@ -12,13 +12,11 @@ set -exuo pipefail
 copy_dir() {
     local Origin="$1"
     local Project="$2"
-    local SRC="$Origin/$Project"
-    local DEST="${NODE}$Origin/$Project"
     local gzfile="$Origin/${Project}.tar.gz"
 
     cd "$Origin"
 
-    rm -rf $gzfile $SRC/target
+    rm -rf $gzfile $Origin/$Project/target
 
     log "Copying $gzfile to ${NODE}..."
 
@@ -26,7 +24,7 @@ copy_dir() {
 
     sleep 2
 
-    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf $gzfile  -C '$DEST'"
+    lxc exec ${NODE} -- bash -c "mkdir -p '$NODE$Origin' && tar -xzf $gzfile  -C '$Origin'"
 
 }
 
