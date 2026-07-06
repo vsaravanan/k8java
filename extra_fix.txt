@@ -1,0 +1,24 @@
+
+viswar@k8s:~$ cat ~/.vimrc
+set mouse-=a
+
+
+
+http => https issue
+
+
+lxc exec k8worker1 -- mkdir -p /etc/containerd/certs.d/k8master:5000
+lxc exec k8worker1 -- bash -c 'cat > /etc/containerd/certs.d/k8master:5000/hosts.toml <<EOF
+server = "http://k8master:5000"
+
+[host."http://k8master:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+EOF'
+
+
+lxc exec k8worker1 -- vi /etc/containerd/config.toml
+
+
+    [plugins.'io.containerd.cri.v1.images'.registry]
+      config_path = '/etc/containerd/certs.d'

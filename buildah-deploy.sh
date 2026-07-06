@@ -18,13 +18,6 @@ echo "Maven building JAR..."
 mvn clean package
 
 
-# buildah bud -t k8master:5000/hello-api:latest .
-
-# buildah bud \
-#     -f /data/java/k8java/Dockerfile \
-#     -t k8master:5000/hello-api:latest \
-#     /data/Hello
-
 lxc exec k8master -- mkdir -p "$BUILD_DIR/target/"
 
 read -p "Enter"
@@ -39,10 +32,7 @@ read -p "Enter"
 
 
 echo "Building OCI image..."
-# lxc exec k8master -- buildah bud \
-#     -t ${FULL_IMAGE_NAME} \
-#     -v ${PROJECT_DIR}/target:/workspace/target:ro \
-#     .
+
 
 lxc exec k8master -- buildah bud \
     -f ${BUILD_DIR}/Dockerfile \
@@ -50,9 +40,6 @@ lxc exec k8master -- buildah bud \
     ${BUILD_DIR}
 
 read -p "Enter"
-
-
-#  lxc exec k8master -- buildah push --tls-verify=false k8master:5000/hello-api:latest docker://k8master:5000/hello-api:latest
 
 
 echo "Pushing image..."

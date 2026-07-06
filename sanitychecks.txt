@@ -1,0 +1,273 @@
+root@k8master:~# kubectl cluster-info
+Kubernetes control plane is running at https://192.168.100.10:6443
+CoreDNS is running at https://192.168.100.10:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+
+
+root@k8master:~# kubectl get nodes -o wide
+NAME        STATUS   ROLES           AGE   VERSION    INTERNAL-IP      EXTERNAL-IP   OS-IMAGE         
+k8master    Ready    control-plane   22h   v1.33.13   192.168.100.10   <none>        Ubuntu 26.04 LTS 
+k8worker1   Ready    <none>          22h   v1.33.13   192.168.100.11   <none>        Ubuntu 26.04 LTS 
+
+
+root@k8master:~# kubectl get pods
+NAME                         READY   STATUS      RESTARTS   AGE
+hello-api-58fdf57788-77lph   1/1     Running     0          84m
+kaniko-test-w6m7b            0/1     Completed   0          13h
+nginx-test-b548755db-h2jts   1/1     Running     0          20h
+nginx-test-b548755db-prg86   1/1     Running     0          20h
+nginx-test-b548755db-sg6lv   1/1     Running     0          18h
+registry-6ff9986b68-4mvj9    1/1     Running     0          3h19m
+
+# with system
+ kubectl get pods -A
+
+kube-flannel   kube-flannel-ds-q9vxc              1/1     Running  
+kube-flannel   kube-flannel-ds-rz9mj              1/1     Running  
+kube-system    coredns-674b8bbfcf-j4zkj           1/1     Running  
+kube-system    coredns-674b8bbfcf-x5z7z           1/1     Running  
+kube-system    etcd-k8master                      1/1     Running  
+kube-system    kube-apiserver-k8master            1/1     Running  
+kube-system    kube-controller-manager-k8master   1/1     Running  
+kube-system    kube-proxy-gjdfv                   1/1     Running  
+kube-system    kube-proxy-ln7ch                   1/1     Running  
+kube-system    kube-scheduler-k8master            1/1     Running  
+
+
+
+root@k8master:~# kubectl get pods -l app=hello-api
+NAME                         READY   STATUS    RESTARTS   AGE
+hello-api-58fdf57788-77lph   1/1     Running   0          86m
+
+
+root@k8master:~# kubectl get svc
+NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-api-service   NodePort    10.103.150.138   <none>        80:31870/TCP     3h11m
+kubernetes          ClusterIP   10.96.0.1        <none>        443/TCP          23h
+nginx-test          NodePort    10.104.137.67    <none>        80:31050/TCP     22h
+registry            NodePort    10.101.192.222   <none>        5000:30241/TCP   4h32m
+
+
+
+root@k8master:~# kubectl get endpoints   hello-api-service
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                ENDPOINTS          AGE
+hello-api-service   10.244.2.24:8090   3h13m
+root@k8master:~#
+
+
+root@k8master:~# kubectl get svc hello-api-service  -o jsonpath='{.spec.ports[0].nodePort}'
+31870
+root@k8master:~# kubectl get svc kubernetes -o jsonpath='{.spec.clusterIP}'
+10.96.0.1
+
+
+
+root@k8master:~# kubectl get configmaps
+NAME               DATA   AGE
+dockerfile-cm      1      15h
+kube-root-ca.crt   1      23h
+
+
+
+
+
+root@k8master:~# kubectl get configmap dockerfile-cm   -o yaml
+apiVersion: v1
+data:
+  Dockerfile: |+
+    FROM alpine:3.20
+    CMD ["echo", "hello from kaniko build"]
+
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2026-07-04T15:47:37Z"
+  name: dockerfile-cm
+  namespace: default
+  resourceVersion: "45586"
+  uid: 8ee47c3f-d297-4910-8eea-abadb858e0c6
+
+
+
+root@k8master:~# kubectl get namespaces
+NAME              STATUS   AGE
+default           Active   24h
+kube-flannel      Active   22h
+kube-node-lease   Active   24h
+kube-public       Active   24h
+kube-system       Active   24h
+
+
+
+
+root@k8master:~# kubectl get pods -n kube-system
+NAME                               READY   STATUS    RESTARTS   AGE
+coredns-674b8bbfcf-j4zkj           1/1     Running   0          24h
+coredns-674b8bbfcf-x5z7z           1/1     Running   0          24h
+etcd-k8master                      1/1     Running   0          24h
+kube-apiserver-k8master            1/1     Running   0          24h
+kube-controller-manager-k8master   1/1     Running   0          24h
+kube-proxy-gjdfv                   1/1     Running   0          23h
+kube-proxy-ln7ch                   1/1     Running   0          23h
+kube-scheduler-k8master            1/1     Running   0          24h
+
+
+
+root@k8master:~# kubectl config current-context
+kubernetes-admin@kubernetes
+
+
+root@k8master:~# kubectl config get-clusters
+NAME
+kubernetes
+
+
+root@k8master:~# kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin
+
+
+root@k8master:~# kubectl config get-users
+NAME
+kubernetes-admin
+
+
+
+kubectl apply -f job.yaml
+
+kubectl logs -f hello-api-58fdf57788-77lph
+
+rror: error from server (NotFound): jobs.batch "hello-api-58fdf57788-77lph" not found in namespace "default"
+root@k8master:~# kubectl logs -f hello-api-58fdf57788-77lph
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.0)
+
+2026-07-05T04:13:37.739Z  INFO 1 --- [hello] [           main] com.saravanjs.hello.HelloApplication     : Starting HelloApplication v0.0.1-SNAPSHOT using Java 26.0.1 with PID 1 (/app/Hello.jar started by root in /app)
+2026-07-05T04:13:37.753Z  INFO 1 --- [hello] [           main] com.saravanjs.hello.HelloApplication   
+
+
+
+
+kubectl api-resources
+NAME                                SHORTNAMES   APIVERSION                        NAMESPACED   KIND
+bindings                                         v1                                true         Binding
+componentstatuses                   cs           v1                                false        ComponentStatus
+configmaps                          cm           v1                                true         ConfigMap
+endpoints                           ep           v1                                true         Endpoints
+events                              ev           v1                                true         Event
+
+
+
+
+root@k8master:~# kubectl get all -A
+NAMESPACE      NAME                                   READY   STATUS      RESTARTS   AGE
+default        pod/hello-api-58fdf57788-77lph         1/1     Running     0          179m
+default        pod/kaniko-test-4kcwq                  0/1     Error       0          15h
+default        pod/kaniko-test-4zl42                  0/1     Error       0          15h
+default        pod/kaniko-test-msv25                  0/1     Error       0          15h
+default        pod/kaniko-test-w6m7b                  0/1     Completed   0          15h
+default        pod/kaniko-test-xbvb9                  0/1     Error       0          15h
+default        pod/nginx-test-b548755db-h2jts         1/1     Running     0          22h
+default        pod/nginx-test-b548755db-prg86         1/1     Running     0          22h
+default        pod/nginx-test-b548755db-sg6lv         1/1     Running     0          19h
+default        pod/registry-6ff9986b68-4mvj9          1/1     Running     0          4h54m
+kube-flannel   pod/kube-flannel-ds-q9vxc              1/1     Running     0          22h
+kube-flannel   pod/kube-flannel-ds-rz9mj              1/1     Running     0          22h
+kube-system    pod/coredns-674b8bbfcf-j4zkj           1/1     Running     0          24h
+kube-system    pod/coredns-674b8bbfcf-x5z7z           1/1     Running     0          24h
+kube-system    pod/etcd-k8master                      1/1     Running     0          24h
+kube-system    pod/kube-apiserver-k8master            1/1     Running     0          24h
+kube-system    pod/kube-controller-manager-k8master   1/1     Running     0          24h
+kube-system    pod/kube-proxy-gjdfv                   1/1     Running     0          23h
+kube-system    pod/kube-proxy-ln7ch                   1/1     Running     0          23h
+kube-system    pod/kube-scheduler-k8master            1/1     Running     0          24h
+
+NAMESPACE     NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default       service/hello-api-service   NodePort    10.103.150.138   <none>        80:31870/TCP             3h33m
+default       service/kubernetes          ClusterIP   10.96.0.1        <none>        443/TCP                  24h
+default       service/nginx-test          NodePort    10.104.137.67    <none>        80:31050/TCP             22h
+default       service/registry            NodePort    10.101.192.222   <none>        5000:30241/TCP           4h54m
+kube-system   service/kube-dns            ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   24h
+
+NAMESPACE      NAME                             DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-flannel   daemonset.apps/kube-flannel-ds   2         2         2       2            2           <none>                   22h
+kube-system    daemonset.apps/kube-proxy        2         2         2       2            2           kubernetes.io/os=linux   24h
+
+NAMESPACE     NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+default       deployment.apps/hello-api    1/1     1            1           3h33m
+default       deployment.apps/nginx-test   3/3     3            3           22h
+default       deployment.apps/registry     1/1     1            1           4h54m
+kube-system   deployment.apps/coredns      2/2     2            2           24h
+
+NAMESPACE     NAME                                   DESIRED   CURRENT   READY   AGE
+default       replicaset.apps/hello-api-58fdf57788   1         1         1       3h33m
+default       replicaset.apps/nginx-test-b548755db   3         3         3       22h
+default       replicaset.apps/registry-6ff9986b68    1         1         1       4h54m
+kube-system   replicaset.apps/coredns-674b8bbfcf     2         2         2       24h
+
+NAMESPACE   NAME                    STATUS     COMPLETIONS   DURATION   AGE
+default     job.batch/kaniko-test   Complete   1/1           2m45s      15h
+root@k8master:~#
+
+
+root@k8master:~# crictl ps
+WARN[0000] Config "/etc/crictl.yaml" does not exist, trying next: "/usr/local/bin/crictl.yaml"
+WARN[0000] runtime connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead.
+WARN[0000] Image connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead.
+CONTAINER           IMAGE               CREATED             STATE               NAME                      ATTEMPT             POD ID              POD                                NAMESPACE
+e4d5bc2498b4a       26b2eb03618e7       5 hours ago         Running             registry                  0                   da004e07e4c45       registry-6ff9986b68-4mvj9          default
+87cb557914af4       1cf5f116067c6       23 hours ago        Running             coredns                   0                   ef80ccd94f2b2       coredns-674b8bbfcf-j4zkj           kube-system
+96393302a2524       1cf5f116067c6       23 hours ago        Running             coredns                   0                   4964bb4b9cb63       coredns-674b8bbfcf-x5z7z           kube-system
+638edb9c324ce       1b3da3296e42b       23 hours ago        Running             kube-flannel              0                   b50402837c35a       kube-flannel-ds-q9vxc              kube-flannel
+2515334894ef2       eeb94ec1ed4ca       23 hours ago        Running             kube-proxy                0                   04d14f4d3c39f       kube-proxy-gjdfv                   kube-system
+e090625f4e72b       7ba818331dd42       24 hours ago        Running             kube-scheduler            0                   5598efedb9dcb       kube-scheduler-k8master            kube-system
+8475ebb1cfe0a       3a279ce8de018       24 hours ago        Running             kube-controller-manager   0                   4ebfb486ae9f7       kube-controller-manager-k8master   kube-system
+c1459ecb602d2       8cb12dd0c3e42       24 hours ago        Running             etcd                      0                   c95dbfdd03ee9       etcd-k8master                      kube-system
+d3a90f2f3ad0c       c6da26c9ccff7       24 hours ago        Running             kube-apiserver            0                   8dcfd00765bec       kube-apiserver-k8master            kube-system
+root@k8master:~#
+
+
+root@k8master:~# crictl images
+WARN[0000] Config "/etc/crictl.yaml" does not exist, trying next: "/usr/local/bin/crictl.yaml"
+WARN[0000] Image connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead.
+IMAGE                                     TAG                 IMAGE ID            SIZE
+docker.io/library/registry                2                   26b2eb03618e7       10.1MB
+ghcr.io/flannel-io/flannel-cni-plugin     v1.9.1-flannel1     fa0b67cf179bd       5.14MB
+ghcr.io/flannel-io/flannel                v0.28.5             1b3da3296e42b       34.5MB
+registry.k8s.io/coredns/coredns           v1.12.0             1cf5f116067c6       20.9MB
+registry.k8s.io/etcd                      3.5.24-0            8cb12dd0c3e42       23.7MB
+registry.k8s.io/kube-apiserver            v1.33.13            c6da26c9ccff7       30.2MB
+registry.k8s.io/kube-controller-manager   v1.33.13            3a279ce8de018       27.8MB
+registry.k8s.io/kube-proxy                v1.33.13            eeb94ec1ed4ca       32MB
+registry.k8s.io/kube-scheduler            v1.33.13            7ba818331dd42       21.9MB
+registry.k8s.io/pause                     3.10                873ed75102791       320kB
+registry.k8s.io/pause                     3.10.1              cd073f4c5f6a8       320kB
+
+
+
+root@k8master:~# crictl logs e4d5bc2498b4a
+WARN[0000] Config "/etc/crictl.yaml" does not exist, trying next: "/usr/local/bin/crictl.yaml"
+WARN[0000] runtime connect using default endpoints: [unix:///run/containerd/containerd.sock unix:///run/crio/crio.sock unix:///var/run/cri-dockerd.sock]. As the default settings are now deprecated, you should set the endpoint instead.
+time="2026-07-05T02:24:58Z" level=warning msg="Ignoring unrecognized environment variable REGISTRY_PORT"
+time="2026-07-05T02:24:58Z" level=warning msg="Ignoring unrecognized environment variable REGISTRY_PORT_5000_TCP"
+time="2026-07-05T02:24:58Z" level=warning msg="Ignoring unrecognized environment variable REGISTRY_PORT_5000_TCP_ADDR"
+time="2026-07-05T02:24:58Z" level=warning msg="Ignoring unrecognized environment variable REGISTRY_PORT_5000_TCP
+
+
+
+
+
+systemctl status kubelet
+systemctl status containerd
+journalctl -u kubelet -f              # live kubelet logs
+
+
+
+sudo snap restart lxd             # last resort
