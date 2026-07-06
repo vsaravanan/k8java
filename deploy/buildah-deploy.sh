@@ -13,9 +13,16 @@ copy_dir() {
     local SRC="$1"
     local DEST="$2"
     local TARFILE="$3"
+    local TARFILE_PATH="${TARFILE}.tar.gz"
 
-    tar -C "$SRC" -czf - "$TARFILE" | \
-    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf - -C '$DEST'"
+    cd "$SRC"
+
+    rm -rf $TARFILE_PATH target
+
+    tar -czf $TARFILE_PATH . 
+
+    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf $TARFILE_PATH  -C '$DEST'"
+
 }
 
 
