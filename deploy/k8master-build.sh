@@ -10,8 +10,8 @@ REGISTRY="${REGISTRY:-k8master:5000}"
 IMAGE_REPO="${IMAGE_REPO:-hello-api}"
 
 
-log()  { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
-fail() { printf '\n\033[1;31mFAILED: %s\033[0m\n' "$1" >&2; exit 1; }
+log()  { printf '\n\033[1;36m==> %s\033[0m\n' ; }
+fail() { printf '\n\033[1;31mFAILED: %s\033[0m\n'  >&2; exit 1; }
 
 BUILD_TAG="$(date +%Y%m%d-%H%M%S)-$(git -C "${PROJECT_DIR}" rev-parse --short HEAD 2>/dev/null || echo nogit)"
 IMAGE_LATEST="${REGISTRY}/${IMAGE_REPO}:latest"
