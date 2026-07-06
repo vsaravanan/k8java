@@ -9,6 +9,15 @@ set -exuo pipefail
 # IMAGE_NAME="hello-api:latest"
 # FULL_IMAGE_NAME="${REGISTRY}/${IMAGE_NAME}"
 
+copy_dir() {
+    local SRC="$1"
+    local DEST="$2"
+    local TARFILE="$3"
+
+    tar -C "$SRC" -czf - "$TARFILE" | \
+    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf - -C '$DEST'"
+}
+
 
 PROJECT_DIR="${PROJECT_DIR:-/data/java/Hello}"
 BUILD_DIR="${BUILD_DIR:-/data/java/k8java/deploy}"
@@ -51,8 +60,10 @@ lxc exec "${NODE}" -- mkdir -p "${PROJECT_DIR}" "${BUILD_DIR}"
 
 # Copy source code, Dockerfile, and build script to k8master
 log "Copying files to ${NODE}..."
-lxc file push -r "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/"
-lxc file push -r "${BUILD_DIR}" "${NODE}${BUILD_DIR}/"
+
+
+copy_dir "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/" Hello
+copy_dir "${BUILD_DIR}" "${NODE}${BUILD_DIR}/" k8java
 
 
 for arg in "$@"; do
