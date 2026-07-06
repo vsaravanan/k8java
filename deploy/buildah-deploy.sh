@@ -13,8 +13,7 @@ copy_dir() {
     local Origin="$1"
     local Project="$2"
     local SRC="$Origin/$Project"
-    local DEST="${NODE}/$Origin/$Project"
-    local TARFILE="$3"
+    local DEST="${NODE}$Origin/$Project"
     local gzfile="$Origin/${Project}.tar.gz"
 
     cd "$Origin"
