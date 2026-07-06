@@ -12,19 +12,21 @@ spec:
       labels:
         app: registry
     spec:
+      nodeName: k8master
       containers:
-      - name: registry
-        image: registry:2
-        ports:
-        - containerPort: 5000
-        volumeMounts:
-        - name: registry-data
-          mountPath: /var/lib/registry
+        - name: registry
+          image: registry:2
+          ports:
+            - containerPort: 5000
+              hostPort: 5000
+          volumeMounts:
+            - name: registry-data
+              mountPath: /var/lib/registry
       volumes:
-      - name: registry-data
-        hostPath:
-          path: /data/registry
-          type: Directory
+        - name: registry-data
+          hostPath:
+            path: /data/registry
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +36,7 @@ spec:
   selector:
     app: registry
   ports:
-  - protocol: TCP
-    port: 5000
-    targetPort: 5000
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
   type: NodePort
