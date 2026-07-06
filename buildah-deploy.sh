@@ -2,50 +2,35 @@
 
 set -exuo pipefail
 
-git reset --hard; git pull ; chmod +x *.sh ; 
-
 # Variables
 PROJECT_DIR=/data/java/Hello
 BUILD_DIR=/data/java/k8java
-JAR_FILE="${PROJECT_DIR}/target/Hello.jar"
 REGISTRY="k8master:5000"
 IMAGE_NAME="hello-api:latest"
 FULL_IMAGE_NAME="${REGISTRY}/${IMAGE_NAME}"
 
-cd ${PROJECT_DIR}
+cd $PROJECT_DIR
 
-echo "Maven building JAR..."
-mvn clean package
+git reset --hard
+git pull
 
+cd $BUILD_DIR
 
-lxc exec k8master -- mkdir -p "$BUILD_DIR/target/"
+git reset --hard
+git pull
+chmod +x *.sh
 
-read -p "Enter"
+# Prepare k8master directories
+lxc exec k8master -- mkdir -p "${PROJECT_DIR}" "${BUILD_DIR}"
 
-lxc file push "$JAR_FILE" k8master/$BUILD_DIR/target/
+# Copy source code, Dockerfile, and build script to k8master
+echo "Copying files to k8master..."
+lxc file push ${PROJECT_DIR} "k8master${PROJECT_DIR}/"
+lxc file push ${BUILD_DIR}/Dockerfile "k8master${BUILD_DIR}/"
+lxc file push ${BUILD_DIR}/k8master-build.sh "k8master${BUILD_DIR}/"
 
-read -p "Enter"
-
-lxc file push "$BUILD_DIR/Dockerfile" k8master/$BUILD_DIR/
-
-read -p "Enter"
-
-
-echo "Building OCI image..."
-
-
-lxc exec k8master -- buildah bud \
-    -f ${BUILD_DIR}/Dockerfile \
-    -t ${FULL_IMAGE_NAME} \
-    ${BUILD_DIR}
-
-read -p "Enter"
-
-
-echo "Pushing image..."
-lxc exec k8master -- buildah push \
-    --tls-verify=false \
-    ${FULL_IMAGE_NAME} \
-    docker://${FULL_IMAGE_NAME}
+# Execute build script on k8master
+echo "Executing build on k8master..."
+lxc exec k8master -- bash ${BUILD_DIR}/k8master-build.sh
 
 echo "Image built and pushed: ${FULL_IMAGE_NAME}"
