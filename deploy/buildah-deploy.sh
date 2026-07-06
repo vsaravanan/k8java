@@ -24,7 +24,10 @@ copy_dir() {
 
     sleep 2
 
-    lxc exec ${NODE} -- bash -c "mkdir -p '$NODE$Origin' && tar -xzf $gzfile  -C '$Origin'"
+    lxc exec ${NODE} -- bash -c " mkdir -p '$NODE$Origin' "
+    lxc exec ${NODE} -- bash -c " rm -rf $Origin/${Project} $Origin/$gzfile "
+    lxc file push $gzfile ${NODE}$Origin/$gzfile
+    lxc exec ${NODE} -- bash -c " tar -xzf $Origin/$gzfile  -C '$Origin'"
 
 }
 
