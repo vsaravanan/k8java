@@ -21,3 +21,7 @@ lxc exec k8master -- kubectl delete deployment registry --ignore-not-found
 lxc exec k8master -- kubectl delete svc registry --ignore-not-found
 lxc exec k8master -- kubectl delete rs -l app=registry --ignore-not-found
 lxc exec k8master -- kubectl delete pods -l app=registry --force --grace-period=0 --ignore-not-found
+
+
+lxc file push /data/java/k8java/hello-deploy.yaml k8master/root/hello-deploy.yaml
+lxc exec k8master -- kubectl apply -f /root/hello-deploy.yaml
