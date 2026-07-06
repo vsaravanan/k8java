@@ -30,12 +30,12 @@ mvn clean package
 # Build image
 log "Building OCI image..."
 
-cd ${BUILD_DIR}
+cd ${PROJECT_DIR}
 buildah bud \
     -f "${BUILD_DIR}/Dockerfile" \
     -t "${IMAGE_TAGGED}" \
     -t "${IMAGE_LATEST}" \
-    "${BUILD_DIR}"
+    "${PROJECT_DIR}"
 
 # Push to registry
 
