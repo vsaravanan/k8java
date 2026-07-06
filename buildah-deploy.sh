@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -exuo pipefail
 
 git reset --hard; git pull ; chmod +x *.sh ; 
 
