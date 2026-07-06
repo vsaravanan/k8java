@@ -6,6 +6,7 @@ set -exuo pipefail
 PROJECT_DIR=/data/java/Hello
 BUILD_DIR=/data/java/k8java
 REGISTRY="k8master:5000"
+IMAGE_REPO="hello-api"
 
 
 
