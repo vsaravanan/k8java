@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-git reset --hard; git pull ; chmod +x *.sh ; ./buildah-deploy.sh
+git reset --hard; git pull ; chmod +x *.sh ; 
 
 # Variables
 PROJECT_DIR=/data/java/Hello
