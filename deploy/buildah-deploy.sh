@@ -79,8 +79,6 @@ log "Copying files to ${NODE}..."
 copy_dir "${ORIGIN_DIR}" Hello
 copy_dir "${ORIGIN_DIR}" k8java/deploy
 
-exit 0
-
 
 for arg in "$@"; do
     case "$arg" in
