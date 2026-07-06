@@ -33,7 +33,7 @@ command -v mvn  >/dev/null || fail "mvn not found on PATH"
 [[ -f "${BUILD_DIR}/Dockerfile" ]]   || fail "Dockerfile not found: ${BUILD_DIR}/Dockerfile"
 
 lxc info "${NODE}" &>/dev/null       || fail "LXD container '${NODE}' not found/running"
-lxc exec "${NODE}" -- command -v buildah >/dev/null || fail "buildah not found inside ${NODE}"
+lxc exec "${NODE}" -- buildah >/dev/null || fail "buildah not found inside ${NODE}"
 
 cd "${PROJECT_DIR}"
 
