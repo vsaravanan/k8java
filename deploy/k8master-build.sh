@@ -3,11 +3,11 @@
 set -exuo pipefail
 
 # Variables
-PROJECT_DIR=/data/java/Hello
-BUILD_DIR=/data/java/k8java/deploy
-REGISTRY="k8master:5000"
-IMAGE_REPO="hello-api"
 
+PROJECT_DIR="${PROJECT_DIR:-/data/java/Hello}"
+BUILD_DIR="${BUILD_DIR:-/data/java/k8java/deploy}"
+REGISTRY="${REGISTRY:-k8master:5000}"
+IMAGE_REPO="${IMAGE_REPO:-hello-api}"
 
 
 log()  { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
@@ -48,7 +48,7 @@ buildah push --tls-verify=false \
     "${IMAGE_LATEST}" "docker://${IMAGE_LATEST}"
 
 log "Verifying registry contents"
-if lxc exec "${NODE}" -- curl -sf "http://${REGISTRY}/v2/${IMAGE_REPO}/tags/list" \
+if curl -sf "http://${REGISTRY}/v2/${IMAGE_REPO}/tags/list" \
     | grep -q "${BUILD_TAG}"; then
   log "Confirmed: ${BUILD_TAG} present in registry"
 else

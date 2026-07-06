@@ -20,7 +20,7 @@ copy_dir() {
 
     log "Copying $gzfile to ${NODE}..."
 
-    tar --exclude='target' --exclude='.git' --exclude='.idea' -czf $gzfile -C $Origin $Project
+    tar --exclude='target' --exclude='.idea' -czf $gzfile -C $Origin $Project
 
     lxc exec ${NODE} -- bash -c " rm -rf $Origin/${Project} $gzfile "
     lxc exec ${NODE} -- bash -c " mkdir -p $Origin "
