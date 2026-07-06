@@ -1,0 +1,38 @@
+kubectl rollout history deployment/hello-api
+kubectl rollout undo deployment/hello-api
+
+
+kubectl rollout status deployment/hello-api
+
+
+kubectl delete deployment hello-api --ignore-not-found
+kubectl delete svc hello-api-service --ignore-not-found
+
+
+kubectl get pods -l app=hello-api  
+
+kubectl get svc hello-api
+
+kubectl get all -A | grep hello-api
+
+kubectl get endpoints   hello-api-service
+
+
+
+buildah images
+buildah rmi k8master:5000/hello-api:latest 
+buildah rmi --prune
+
+curl -s http://k8master:5000/v2/hello-api/tags/list
+
+kubectl delete pod -l app=registry
+
+crictl images | grep hello-api
+crictl rmi k8master:5000/hello-api:latest
+
+lxc exec k8worker1 -- crictl images | grep hello-api
+lxc exec k8worker1 -- crictl rmi k8master:5000/hello-api:latest
+
+
+lxc restore k8master hello-api-working
+lxc restore k8worker1 hello-api-working
