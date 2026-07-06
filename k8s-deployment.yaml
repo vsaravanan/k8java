@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-api
+  template:
+    metadata:
+      labels:
+        app: hello-api
+    spec:
+      containers:
+      - name: hello-api
+        image: k8master:5000/hello-api:latest
+        ports:
+        - containerPort: 8090
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-api-service
+spec:
+  selector:
+    app: hello-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8090
+  type: NodePort
