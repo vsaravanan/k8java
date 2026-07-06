@@ -82,12 +82,12 @@ for arg in "$@"; do
     case "$arg" in
         registry)
             log "Applying registry..."
-            lxc exec "${NODE}" -- kubectl apply -f "${NODE}${BUILD_DIR}/registry.yaml"
+            lxc exec "${NODE}" -- kubectl apply -f "${BUILD_DIR}/registry.yaml"
             sleep 5
             ;;
         hello-deploy)
             log "Applying hello-deploy..."
-            lxc exec "${NODE}" -- kubectl apply -f "${NODE}${BUILD_DIR}/hello-deploy.yaml"
+            lxc exec "${NODE}" -- kubectl apply -f "${BUILD_DIR}/hello-deploy.yaml"
 
             log "Waiting for deployment..."
 
