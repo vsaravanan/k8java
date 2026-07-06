@@ -1,7 +1,17 @@
+#!/bin/bash
+
+# Install buildah
 sudo apt install buildah
+
 # Add user to subuid/subgid files (requires root)
 sudo usermod --add-subuids 100000-165535 viswar
 sudo usermod --add-subgids 100000-165535 viswar
-# Or manually edit files
-echo "viswar:100000:65536" | sudo tee -a /etc/subuid
-echo "viswar:100000:65536" | sudo tee -a /etc/subgid
+
+# Push registry configuration to k8master via LXC
+lxc file push ./registry.yaml k8master/root/registry.yaml
+
+# Apply registry deployment
+lxc exec k8master -- kubectl apply -f /root/registry.yaml
+
+# Wait for registry pod to be ready
+lxc exec k8master -- kubectl wait --for=condition=ready pod -l app=registry --timeout=300s
