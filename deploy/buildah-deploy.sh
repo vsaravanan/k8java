@@ -74,9 +74,6 @@ lxc exec "${NODE}" -- mkdir -p "${PROJECT_DIR}" "${BUILD_DIR}"
 log "Copying files to ${NODE}..."
 
 
-# copy_dir "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/" Hello
-# copy_dir "${BUILD_DIR}" "${NODE}${BUILD_DIR}/" k8java
-
 copy_dir "${ORIGIN_DIR}" Hello
 copy_dir "${ORIGIN_DIR}" k8java/deploy
 
