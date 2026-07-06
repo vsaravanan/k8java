@@ -16,16 +16,17 @@ copy_dir() {
 
     cd "$Origin"
 
-    rm -rf $gzfile $Origin/$Project/target
+    rm -f $gzfile 
 
     log "Copying $gzfile to ${NODE}..."
 
-    tar -czf $gzfile -C $Origin $Project
+    tar --exclude='target' --exclude='.git' --exclude='.idea' -czf $gzfile -C $Origin $Project
 
     lxc exec ${NODE} -- bash -c " rm -rf $Origin/${Project} $gzfile "
     lxc exec ${NODE} -- bash -c " mkdir -p $Origin "
     lxc file push $gzfile ${NODE}$gzfile
-    lxc exec ${NODE} -- bash -c " tar -xzf $gzfile  -C '$Origin'"
+    lxc exec ${NODE} -- bash -c " tar -xzf $gzfile  -C '$Origin' && rm -f '${gzfile}'"
+    rm -f "${gzfile}" 
 
 }
 
