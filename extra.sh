@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install buildah
-sudo apt install buildah
+lxc exec k8master -- sudo apt install buildah
 
 # Add user to subuid/subgid files (requires root)
 sudo usermod --add-subuids 100000-165535 viswar
