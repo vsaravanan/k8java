@@ -21,6 +21,9 @@ copy_dir() {
 
     tar -czf $TARFILE_PATH . 
 
+    log "Copying $TARFILE_PATH to ${NODE}..."
+    sleep 2
+
     lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf $TARFILE_PATH  -C '$DEST'"
 
 }
