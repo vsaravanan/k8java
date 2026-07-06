@@ -10,25 +10,28 @@ set -exuo pipefail
 # FULL_IMAGE_NAME="${REGISTRY}/${IMAGE_NAME}"
 
 copy_dir() {
-    local SRC="$1"
-    local DEST="$2"
+    local Origin="$1"
+    local Project="$2"
+    local SRC="$Origin/$Project"
+    local DEST="${NODE}/$Origin/$Project"
     local TARFILE="$3"
-    local TARFILE_PATH="${TARFILE}.tar.gz"
+    local gzfile="$Origin/${Project}.tar.gz"
 
-    cd "$SRC"
+    cd "$Origin"
 
-    rm -rf $TARFILE_PATH target
+    rm -rf $gzfile $SRC/target
 
-    tar -czf $TARFILE_PATH . 
+    log "Copying $gzfile to ${NODE}..."
 
-    log "Copying $TARFILE_PATH to ${NODE}..."
+    tar -czf $gzfile -C $Origin $Project
+
     sleep 2
 
-    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf $TARFILE_PATH  -C '$DEST'"
+    lxc exec ${NODE} -- bash -c "mkdir -p '$DEST' && tar -xzf $gzfile  -C '$DEST'"
 
 }
 
-
+ORIGIN_DIR="${ORIGIN_DIR:-/data/java}"
 PROJECT_DIR="${PROJECT_DIR:-/data/java/Hello}"
 BUILD_DIR="${BUILD_DIR:-/data/java/k8java/deploy}"
 REGISTRY="${REGISTRY:-k8master:5000}"
@@ -72,8 +75,12 @@ lxc exec "${NODE}" -- mkdir -p "${PROJECT_DIR}" "${BUILD_DIR}"
 log "Copying files to ${NODE}..."
 
 
-copy_dir "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/" Hello
-copy_dir "${BUILD_DIR}" "${NODE}${BUILD_DIR}/" k8java
+# copy_dir "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/" Hello
+# copy_dir "${BUILD_DIR}" "${NODE}${BUILD_DIR}/" k8java
+
+copy_dir "${ORIGIN_DIR}" Hello
+exit 0
+# copy_dir "${ORIGIN_DIR}" k8java
 
 
 for arg in "$@"; do
