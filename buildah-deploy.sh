@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -euo pipefail
+
+git reset --hard; git pull ; chmod +x *.sh ; ./buildah-deploy.sh
+
 # Variables
 PROJECT_DIR=/data/java/Hello
 BUILD_DIR=/data/java/k8java
