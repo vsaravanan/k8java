@@ -2,7 +2,7 @@
 
 # Variables
 PROJECT_DIR=/data/java/Hello
-BUILD_DIR=/data/k8java
+BUILD_DIR=/data/java/k8java
 JAR_FILE="${PROJECT_DIR}/target/Hello.jar"
 REGISTRY="k8master:5000"
 IMAGE_NAME="hello-api:buildah"
