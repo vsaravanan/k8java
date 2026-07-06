@@ -52,9 +52,13 @@ lxc exec k8master -- buildah bud \
 read -p "Enter"
 
 
+#  lxc exec k8master -- buildah push --tls-verify=false k8master:5000/hello-api:latest docker://k8master:5000/hello-api:latest
+
+
 echo "Pushing image..."
 lxc exec k8master -- buildah push \
     --tls-verify=false \
+    ${FULL_IMAGE_NAME} \
     docker://${FULL_IMAGE_NAME}
 
 echo "Image built and pushed: ${FULL_IMAGE_NAME}"
