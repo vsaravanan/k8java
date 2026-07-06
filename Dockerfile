@@ -1,5 +1,5 @@
 # Use OpenJDK 26 runtime image
-FROM eclipse-temurin:26-jre-alpine
+FROM docker.io/library/eclipse-temurin:26-jre-alpine
 
 # Set working directory
 WORKDIR /app
