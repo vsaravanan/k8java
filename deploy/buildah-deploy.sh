@@ -51,8 +51,8 @@ lxc exec "${NODE}" -- mkdir -p "${PROJECT_DIR}" "${BUILD_DIR}"
 
 # Copy source code, Dockerfile, and build script to k8master
 log "Copying files to ${NODE}..."
-lxc file push "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/"
-lxc file push "${BUILD_DIR}" "${NODE}${BUILD_DIR}/"
+lxc file push -r "${PROJECT_DIR}" "${NODE}${PROJECT_DIR}/"
+lxc file push -r "${BUILD_DIR}" "${NODE}${BUILD_DIR}/"
 
 
 for arg in "$@"; do
