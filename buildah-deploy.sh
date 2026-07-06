@@ -20,13 +20,13 @@ mvn clean package
 cd ${BUILD_DIR}
 
 echo "Building OCI image..."
-buildah bud \
+lxc exec k8master -- buildah bud \
     -t ${FULL_IMAGE_NAME} \
     -v ${PROJECT_DIR}/target:/workspace/target:ro \
     .
 
 echo "Pushing image..."
-buildah push \
+lxc exec k8master -- buildah push \
     --tls-verify=false \
     docker://${FULL_IMAGE_NAME}
 
