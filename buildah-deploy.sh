@@ -9,8 +9,8 @@ PROJECT_DIR=/data/java/Hello
 BUILD_DIR=/data/java/k8java
 JAR_FILE="${PROJECT_DIR}/target/Hello.jar"
 REGISTRY="k8master:5000"
-IMAGE_NAME="hello-api:buildah"
-FULL_IMAGE_NAME="${REGISTRY}/${IMAGE_NAME}:latest"
+IMAGE_NAME="hello-api:lastest"
+FULL_IMAGE_NAME="${REGISTRY}/${IMAGE_NAME}"
 
 cd ${PROJECT_DIR}
 
