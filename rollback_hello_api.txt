@@ -6,7 +6,7 @@ kubectl rollout status deployment/hello-api
 
 
 kubectl delete deployment hello-api --ignore-not-found
-kubectl delete svc hello-api-service --ignore-not-found
+kubectl delete svc hello-api --ignore-not-found
 
 
 kubectl get pods -l app=hello-api  
